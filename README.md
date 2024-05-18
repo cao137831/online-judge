@@ -6,7 +6,8 @@
 
 基于Vue3、SpringBoot、Docker的在线评测系统。
 
-线上地址：[online-judge](124.70.69.159)
+线上地址：[online-judge](http://124.70.69.159)
+
 
 **前端**
 
