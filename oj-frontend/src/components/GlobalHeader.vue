@@ -12,7 +12,7 @@
           disabled
         >
           <div class="title-bar">
-            <img class="logo" src="../assets/oj-logo.svg" />
+            <img class="logo" src="../assets/logo.svg" />
             <div class="title">Online Judge</div>
           </div>
         </a-menu-item>
@@ -44,6 +44,7 @@ import checkAccess from "@/access/checkAccess";
 import accessEnum from "@/access/accessEnum";
 import { UserControllerService } from "../../generated";
 import message from "@arco-design/web-vue/es/message";
+import user from "@/store/user";
 
 const router = useRouter(); //用于路由跳转
 const store = useStore();
@@ -72,13 +73,6 @@ const selectedKeys = ref(["/"]);
 router.afterEach((to, from, failure) => {
   selectedKeys.value = [to.path];
 });
-
-setTimeout(() => {
-  store.dispatch("user/getLoginUser", {
-    userName: "曹浩龙",
-    userRole: accessEnum.ADMIN,
-  });
-}, 3000);
 
 const doMenuClick = (key: string) => {
   router.push({

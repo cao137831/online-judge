@@ -21,6 +21,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * 权限校验 AOP
+ * 
+ * @author cao13
  */
 @Aspect
 @Component
@@ -40,7 +42,7 @@ public class AuthInterceptor {
     public Object doInterceptor(ProceedingJoinPoint joinPoint, AuthCheck authCheck) throws Throwable {
         String mustRole = authCheck.mustRole();
         RequestAttributes requestAttributes = RequestContextHolder.currentRequestAttributes();
-        HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
+        HttpServletRequest request = ((ServletRequestAttributes)requestAttributes).getRequest();
         // 当前登录用户
         User loginUser = userService.getLoginUser(request);
         // 必须有该权限才通过
@@ -65,4 +67,3 @@ public class AuthInterceptor {
         return joinPoint.proceed();
     }
 }
-

@@ -6,6 +6,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * 全局跨域配置
+ * @author cao13
  */
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
@@ -22,4 +23,5 @@ public class CorsConfig implements WebMvcConfigurer {
                 .allowedHeaders("*")
                 .exposedHeaders("*");
     }
+
 }

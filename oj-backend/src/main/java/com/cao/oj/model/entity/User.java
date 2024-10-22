@@ -13,6 +13,7 @@ import lombok.Data;
 
 /**
  * 用户
+ * @author cao13
  */
 @TableName(value = "user")
 @Data
@@ -33,16 +34,6 @@ public class User implements Serializable {
      * 用户密码
      */
     private String userPassword;
-
-    /**
-     * 开放平台id
-     */
-    private String unionId;
-
-    /**
-     * 公众号openId
-     */
-    private String mpOpenId;
 
     /**
      * 用户昵称

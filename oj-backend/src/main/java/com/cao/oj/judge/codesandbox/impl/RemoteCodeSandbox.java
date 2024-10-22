@@ -1,5 +1,7 @@
 package com.cao.oj.judge.codesandbox.impl;
 
+import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
@@ -8,7 +10,10 @@ import com.cao.oj.exception.BusinessException;
 import com.cao.oj.judge.codesandbox.CodeSandbox;
 import com.cao.oj.judge.codesandbox.model.ExecuteCodeRequest;
 import com.cao.oj.judge.codesandbox.model.ExecuteCodeResponse;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -16,16 +21,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.cao.oj.constant.JudgeConstant.AUTH_REQUEST_HEADER;
+import static com.cao.oj.constant.JudgeConstant.AUTH_REQUEST_SECRET;
+
 /**
  * 远程代码沙箱（实际调用的沙箱）
+ * @author cao13
  */
 @Component
+//@ConfigurationProperties(prefix = "codesandbox")
+//@Data
 public class RemoteCodeSandbox implements CodeSandbox {
-
-    // 定义鉴权请求头和密钥
-    private static final String AUTH_REQUEST_HEADER = "auth";
-
-    private static final String AUTH_REQUEST_SECRET = "secretKey";
 
     @Value("${codesandbox.host}")
     private String host;
@@ -35,16 +41,18 @@ public class RemoteCodeSandbox implements CodeSandbox {
 
     @Override
     public ExecuteCodeResponse executeCode(ExecuteCodeRequest executeCodeRequest) {
-        System.out.println("远程代码沙箱（实际调用的沙箱）");
+
         String url = "http://" + host + ":" + port + "/executeCode";
         String json = JSONUtil.toJsonStr(executeCodeRequest);
-        String responseStr = HttpUtil.createPost(url)
+        HttpRequest request = HttpUtil.createPost(url)
                 .header(AUTH_REQUEST_HEADER, AUTH_REQUEST_SECRET)
-                .body(json)
-                .execute()
-                .body();
-        if (StringUtils.isBlank(responseStr)) {
-            throw new BusinessException(ErrorCode.API_REQUEST_ERROR, "executeCode remoteSandbox error, message = " + responseStr);
+                .body(json);
+        HttpResponse response = request.execute(true);
+        String responseStr = response.body();
+
+        if (!response.isOk()) {
+            String error = "调用远程代码沙箱失败，请求头 => " + response.headers() + "请求体 => " + response.body();
+            throw new BusinessException(ErrorCode.API_REQUEST_ERROR, error);
         }
         return JSONUtil.toBean(responseStr, ExecuteCodeResponse.class);
     }
@@ -53,24 +61,21 @@ public class RemoteCodeSandbox implements CodeSandbox {
 //        String url = "http://124.70.69.159:8090/executeCode";
         String url = "http://192.168.56.101:8090/executeCode";
         ExecuteCodeRequest executeCodeRequest = new ExecuteCodeRequest();
-        executeCodeRequest.setLanguage("java");
+        executeCodeRequest.setLanguage("go");
         List<String> inputList = new ArrayList<>();
         inputList.add("1 1");
         inputList.add("12 454");
         executeCodeRequest.setInputList(inputList);
-        executeCodeRequest.setCode("import java.util.Scanner;\n" +
+        executeCodeRequest.setCode("package main\n" +
                 "\n" +
-                "public class Main {\n" +
-                "    public static void main(String[] args) {\n" +
-                "        Scanner in = new Scanner(System.in);\n" +
+                "import (\n" +
+                "\t\"fmt\"\n" +
+                ")\n" +
                 "\n" +
-                "        int a = in.nextInt();\n" +
-                "        int b = in.nextInt();\n" +
-                "\n" +
-                "//        int a = Integer.parseInt(args[0]);\n" +
-                "//        int b = Integer.parseInt(args[1]);\n" +
-                "        System.out.println((a + b));\n" +
-                "    }\n" +
+                "func main() {\n" +
+                "\tvar a, b int\n" +
+                "\tfmt.Scan(&a, &b)\n" +
+                "\tfmt.Println(a / b)\n" +
                 "}\n");
         String json = JSONUtil.toJsonStr(executeCodeRequest);
         String responseStr = HttpUtil.createPost(url)

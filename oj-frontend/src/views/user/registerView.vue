@@ -60,7 +60,7 @@ const form = reactive({
  * 提交表单
  */
 const handleSubmit = async () => {
-  const res = await UserControllerService.userRegisterUsingPost(form);
+  const res = await UserControllerService.registerUsingPost(form);
   if (res.code === 0) {
     router.push({
       path: "/user/login",

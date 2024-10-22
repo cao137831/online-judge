@@ -20,10 +20,9 @@ export type OpenAPIConfig = {
 };
 
 export const OpenAPI: OpenAPIConfig = {
-  // BASE: "http://localhost:8101", // 本地调试的地址
-  BASE: "http://124.70.69.159:8101",  // 云端请求地址
+  BASE: "http://localhost:8101/",
   VERSION: "1.0",
-  WITH_CREDENTIALS: true,
+  WITH_CREDENTIALS: false,
   CREDENTIALS: "include",
   TOKEN: undefined,
   USERNAME: undefined,

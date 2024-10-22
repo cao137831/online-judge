@@ -3,29 +3,21 @@ server:
   port: 8101
   servlet:
     context-path: /api
-    # cookie 30 天过期
-    session:
-      cookie:
-        max-age: 2592000
+#    # cookie 30 天过期
+#    session:
+#      cookie:
+#        max-age: 2592000
 # 公共配置文件
 spring:
   application:
     name: oj-backend
-  # 默认 dev 环境
-  profiles:
-    active: dev
   # 支持 swagger3
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-  # session 配置
-  session:
-    # todo 取消注释开启分布式 session（须先配置 Redis）
-    store-type: redis
-    timeout: 2592000
   # 数据库配置
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    #    driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://192.168.56.101:3306/oj
     username: root
     password: root
@@ -34,12 +26,13 @@ spring:
     database: 1
     host: 192.168.56.101
     port: 6379
-    timeout: 5000
     password:
+  cache:
+    type: redis
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: false
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # 开发环境，打印 sql
   global-config:
     db-config:
       logic-delete-field: isDelete # 全局逻辑删除的实体字段名
@@ -61,3 +54,6 @@ codesandbox:
   type: remote # example：示例，remote：远程，thirdParty：第三方
   host: 192.168.56.101
   port: 8090
+#logging:
+#  level:
+#    root: error

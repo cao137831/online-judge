@@ -9,7 +9,9 @@ import java.util.List;
 
 /**
  * 查询请求
+ * @author cao13
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class QuestionSubmitQueryRequest extends PageRequest implements Serializable {
 

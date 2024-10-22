@@ -8,7 +8,8 @@ import java.lang.annotation.Target;
 /**
  * 权限校验
  *
-
+ *
+ * @author cao13
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
@@ -22,4 +23,3 @@ public @interface AuthCheck {
     String mustRole() default "";
 
 }
-

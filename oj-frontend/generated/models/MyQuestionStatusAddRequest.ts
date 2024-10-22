@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type JudgeConfig = {
-  memoryLimit?: number;
-  timeLimit?: number;
+export type MyQuestionStatusAddRequest = {
+  questionId?: number;
+  status?: number;
 };

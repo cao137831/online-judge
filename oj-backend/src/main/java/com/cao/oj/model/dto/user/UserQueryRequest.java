@@ -9,6 +9,7 @@ import lombok.EqualsAndHashCode;
 
 /**
  * 用户查询请求
+ * @author cao13
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -17,16 +18,6 @@ public class UserQueryRequest extends PageRequest implements Serializable {
      * id
      */
     private Long id;
-
-    /**
-     * 开放平台id
-     */
-    private String unionId;
-
-    /**
-     * 公众号openId
-     */
-    private String mpOpenId;
 
     /**
      * 用户昵称

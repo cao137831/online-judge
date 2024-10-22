@@ -14,8 +14,6 @@
             <result property="acceptNum" column="acceptNum" jdbcType="INTEGER"/>
             <result property="judgeCase" column="judgeCase" jdbcType="VARCHAR"/>
             <result property="judgeConfig" column="judgeConfig" jdbcType="VARCHAR"/>
-            <result property="thumbNum" column="thumbNum" jdbcType="INTEGER"/>
-            <result property="favourNum" column="favourNum" jdbcType="INTEGER"/>
             <result property="userId" column="userId" jdbcType="BIGINT"/>
             <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
             <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>

@@ -8,6 +8,7 @@ import lombok.Data;
 
 /**
  * 题目表
+ * @author cao13
  * @TableName question
  */
 @TableName(value ="question")
@@ -58,16 +59,6 @@ public class Question implements Serializable {
      * 判题配置（json数组）
      */
     private String judgeConfig;
-
-    /**
-     * 点赞数
-     */
-    private Integer thumbNum;
-
-    /**
-     * 收藏数
-     */
-    private Integer favourNum;
 
     /**
      * 创建用户 id

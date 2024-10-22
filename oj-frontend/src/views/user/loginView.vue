@@ -1,37 +1,40 @@
 <template>
   <h2 style="margin-bottom: 16px">用户登录</h2>
   <div id="userLoginView">
-    <a-form
-      style="max-width: 480px; margin: 0 auto"
-      label-align="left"
-      auto-label-width
-      :model="form"
-      @submit="handleSubmit"
-    >
-      <a-form-item field="userAccount" tooltip="userAccount" label="账号">
-        <a-input v-model="form.userAccount" placeholder="请输入账号" />
-      </a-form-item>
-      <a-form-item
-        field="userPassword"
-        tooltip="userPassword 长度不少于8位"
-        label="密码"
+    <a-row>
+      <a-form
+        style="max-width: 480px; margin: 0 auto"
+        label-align="left"
+        auto-label-width
+        :model="form"
+        @submit="handleSubmit"
       >
-        <a-input-password
-          v-model="form.userPassword"
-          placeholder="请输入密码"
-        />
-      </a-form-item>
-      <a-form-item>
-        <a-space size="large">
-          <a-button style="width: 128px" href="/user/register">
-            去注册
-          </a-button>
-          <a-button html-type="submit" type="primary" style="width: 128px">
+        <a-form-item field="userAccount" tooltip="userAccount" label="账号">
+          <a-input v-model="form.userAccount" placeholder="请输入账号" />
+        </a-form-item>
+        <a-form-item
+          field="userPassword"
+          tooltip="userPassword 长度不少于8位"
+          label="密码"
+        >
+          <a-input-password
+            v-model="form.userPassword"
+            placeholder="请输入密码"
+          />
+        </a-form-item>
+
+        <a-col>
+          <a-button style="width: 128px" href="/user/register"> 注册</a-button>
+          <a-button
+            html-type="submit"
+            type="primary"
+            style="width: 128px; float: right"
+          >
             登录
           </a-button>
-        </a-space>
-      </a-form-item>
-    </a-form>
+        </a-col>
+      </a-form>
+    </a-row>
   </div>
 </template>
 
@@ -41,6 +44,7 @@ import { UserControllerService, UserLoginRequest } from "../../../generated";
 import message from "@arco-design/web-vue/es/message";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
+import user from "@/store/user";
 
 const router = useRouter();
 const store = useStore();
@@ -57,7 +61,7 @@ const form = reactive({
  * 提交表单
  */
 const handleSubmit = async () => {
-  const res = await UserControllerService.userLoginUsingPost(form);
+  const res = await UserControllerService.loginUsingPost(form);
   if (res.code === 0) {
     // alert("登陆成功");
     await store.dispatch("user/getLoginUser");

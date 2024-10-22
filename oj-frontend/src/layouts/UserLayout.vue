@@ -3,7 +3,7 @@
     <a-layout style="min-height: 100vh">
       <a-layout-header class="header">
         <a-space>
-          <img src="../assets/oj-logo.svg" class="logo" />
+          <img src="../assets/logo.svg" class="logo" />
           <div>Online Judge</div>
         </a-space>
       </a-layout-header>

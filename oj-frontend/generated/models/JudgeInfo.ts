@@ -3,7 +3,8 @@
 /* tslint:disable */
 /* eslint-disable */
 export type JudgeInfo = {
+  errorMessage?: string;
+  judgeInfoStatus?: string;
   memory?: number;
-  message?: string;
   time?: number;
 };

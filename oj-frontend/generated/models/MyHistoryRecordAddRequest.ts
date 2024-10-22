@@ -2,7 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type JudgeConfig = {
-  memoryLimit?: number;
-  timeLimit?: number;
+export type MyHistoryRecordAddRequest = {
+  historyRecord?: string;
+  judgeInfo?: string;
+  questionId?: number;
+  userId?: number;
 };

@@ -17,6 +17,7 @@ import org.springframework.beans.BeanUtils;
 
 /**
  * 题目封装类
+ * @author cao13
  */
 @Data
 public class QuestionVO implements Serializable {
@@ -55,25 +56,10 @@ public class QuestionVO implements Serializable {
      */
     private Integer acceptNum;
 
-//    /**
-//     * 判题用例（json数组）防止打表通过
-//     */
-//    private String judgeCase;
-
     /**
      * 判题配置（json数组）
      */
     private JudgeConfig judgeConfig;
-
-    /**
-     * 点赞数
-     */
-    private Integer thumbNum;
-
-    /**
-     * 收藏数
-     */
-    private Integer favourNum;
 
     /**
      * 创建用户 id

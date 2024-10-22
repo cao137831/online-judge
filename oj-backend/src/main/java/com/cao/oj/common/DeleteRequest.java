@@ -6,12 +6,13 @@ import lombok.Data;
 
 /**
  * 删除请求
+ * @author cao13
  */
 @Data
 public class DeleteRequest implements Serializable {
 
     /**
-     * id
+     * 删除 Id
      */
     private Long id;
 

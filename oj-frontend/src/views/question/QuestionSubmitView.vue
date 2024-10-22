@@ -19,11 +19,6 @@
       <a-form-item>
         <a-button type="primary" @click="doSubmit">搜索</a-button>
       </a-form-item>
-      <a-space>
-        <a-typography-paragraph mark
-          >注意：判题信息中，memory单位为KB，time单位为ms.
-        </a-typography-paragraph>
-      </a-space>
     </a-form>
     <a-divider size="0" />
     <a-table
@@ -114,7 +109,7 @@ const columns = [
   },
   {
     title: "判题状态",
-    dataIndex: "status",
+    dataIndex: "questionSubmitStatus",
   },
   {
     title: "题目 id",

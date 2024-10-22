@@ -13,8 +13,8 @@ export type QuestionSubmitVO = {
   judgeInfo?: JudgeInfo;
   language?: string;
   questionId?: number;
+  questionSubmitStatus?: string;
   questionVO?: QuestionVO;
-  status?: number;
   updateTime?: string;
   userId?: number;
   userVO?: UserVO;

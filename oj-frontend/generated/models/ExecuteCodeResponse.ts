@@ -6,7 +6,6 @@ import type { JudgeInfo } from "./JudgeInfo";
 
 export type ExecuteCodeResponse = {
   judgeInfo?: JudgeInfo;
-  judgeInfoStatus?: string;
   outputList?: Array<string>;
   questionSubmitStatus?: string;
 };

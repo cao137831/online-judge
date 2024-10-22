@@ -1,5 +1,6 @@
 package com.cao.oj.controller;
 
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cao.oj.annotation.AuthCheck;
@@ -28,132 +29,85 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+import static com.cao.oj.constant.UserConstant.ADMIN_ROLE;
+
 /**
  * 题目接口
+ * 
+ * @author cao13
  */
 @RestController
-@RequestMapping("/question")
+@RequestMapping("/questions")
 @Slf4j
 public class QuestionController {
 
     @Resource
     private QuestionService questionService;
 
-    @Resource
-    private QuestionSubmitService questionSubmitService;
-
-    @Resource
-    private UserService userService;
-
     // region 增删改查
 
     /**
      * 创建
      *
-     * @param questionAddRequest
-     * @param request
-     * @return
+     * @param questionAddRequest 添加题目请求
+     * @param request HttpServletRequest
+     * @return 是否新增成功
      */
-    @PostMapping("/add")
-    public BaseResponse<Long> addQuestion(@RequestBody QuestionAddRequest questionAddRequest, HttpServletRequest request) {
-        if (questionAddRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+    @PostMapping
+    @AuthCheck(mustRole = ADMIN_ROLE)
+    public BaseResponse<Long> add(@RequestBody QuestionAddRequest questionAddRequest, HttpServletRequest request) {
+        if (ObjectUtil.isEmpty(questionAddRequest)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
         }
-        Question question = new Question();
-        BeanUtils.copyProperties(questionAddRequest, question);
-        List<JudgeCase> judgeCase = questionAddRequest.getJudgeCase();
-        if (judgeCase != null) {
-            question.setJudgeCase(JSONUtil.toJsonStr(judgeCase));
-        }
-        JudgeConfig judgeConfig = questionAddRequest.getJudgeConfig();
-        if (judgeConfig != null) {
-            question.setJudgeConfig(JSONUtil.toJsonStr(judgeConfig));
-        }
-        List<String> tags = questionAddRequest.getTags();
-        if (tags != null) {
-            question.setTags(JSONUtil.toJsonStr(tags));
-        }
-        questionService.validQuestion(question, true);
-        User loginUser = userService.getLoginUser(request);
-        question.setUserId(loginUser.getId());
-        question.setFavourNum(0);
-        question.setThumbNum(0);
-        boolean result = questionService.save(question);
-        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
-        long newQuestionId = question.getId();
-        return ResultUtils.success(newQuestionId);
+        Long id = questionService.add(questionAddRequest, request);
+        return ResultUtils.success(id);
     }
 
     /**
      * 删除
      *
-     * @param deleteRequest
-     * @param request
-     * @return
+     * @param deleteRequest 删除请求
+     * @param request HttpServletRequest
+     * @return 是否删除成功
      */
-    @PostMapping("/delete")
-    public BaseResponse<Boolean> deleteQuestion(@RequestBody DeleteRequest deleteRequest, HttpServletRequest request) {
-        if (deleteRequest == null || deleteRequest.getId() <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+    @DeleteMapping
+    @AuthCheck(mustRole = ADMIN_ROLE)
+    public BaseResponse<Boolean> remove(@RequestBody DeleteRequest deleteRequest, HttpServletRequest request) {
+        if (ObjectUtil.isEmpty(deleteRequest)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
         }
-        User user = userService.getLoginUser(request);
-        long id = deleteRequest.getId();
-        // 判断是否存在
-        Question oldQuestion = questionService.getById(id);
-        ThrowUtils.throwIf(oldQuestion == null, ErrorCode.NOT_FOUND_ERROR);
-        // 仅本人或管理员可删除
-        if (!oldQuestion.getUserId().equals(user.getId()) && !userService.isAdmin(request)) {
-            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
-        }
-        boolean b = questionService.removeById(id);
-        return ResultUtils.success(b);
+        boolean result = questionService.remove(deleteRequest, request);
+        return ResultUtils.success(result);
     }
 
     /**
      * 更新（仅管理员）
      *
-     * @param questionUpdateRequest
-     * @return
+     * @param questionUpdateRequest 题目更新请求
+     * @return 是否更新成功
      */
-    @PostMapping("/update")
-    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<Boolean> updateQuestion(@RequestBody QuestionUpdateRequest questionUpdateRequest) {
-        if (questionUpdateRequest == null || questionUpdateRequest.getId() <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+    @PutMapping
+    @AuthCheck(mustRole = ADMIN_ROLE)
+    public BaseResponse<Boolean> update(@RequestBody QuestionUpdateRequest questionUpdateRequest) {
+        if (ObjectUtil.isEmpty(questionUpdateRequest)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
         }
 
-        Question question = new Question();
-        BeanUtils.copyProperties(questionUpdateRequest, question);
-        List<JudgeCase> judgeCase = questionUpdateRequest.getJudgeCase();
-        if (judgeCase != null) {
-            question.setJudgeCase(JSONUtil.toJsonStr(judgeCase));
-        }
-        JudgeConfig judgeConfig = questionUpdateRequest.getJudgeConfig();
-        if (judgeConfig != null) {
-            question.setJudgeConfig(JSONUtil.toJsonStr(judgeConfig));
-        }
-        List<String> tags = questionUpdateRequest.getTags();
-        if (tags != null) {
-            question.setTags(JSONUtil.toJsonStr(tags));
-        }
-        // 参数校验
-        questionService.validQuestion(question, false);
-        long id = questionUpdateRequest.getId();
-        // 判断是否存在
-        Question oldQuestion = questionService.getById(id);
-        ThrowUtils.throwIf(oldQuestion == null, ErrorCode.NOT_FOUND_ERROR);
-        boolean result = questionService.updateById(question);
+        boolean result = questionService.update(questionUpdateRequest);
         return ResultUtils.success(result);
     }
 
     /**
      * 根据 id 获取（包装类）
      *
-     * @param id
-     * @return
+     * @param id 题目id
+     * @return 题目包装类
      */
-    @GetMapping("/get/vo")
-    public BaseResponse<QuestionVO> getQuestionVOById(long id, HttpServletRequest request) {
+    @GetMapping("/{id}/vo")
+    public BaseResponse<QuestionVO> getQuestionVoById(@PathVariable Long id, HttpServletRequest request) {
+        if (ObjectUtil.isEmpty(id)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
+        }
         if (id <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -161,131 +115,78 @@ public class QuestionController {
         if (question == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
-        return ResultUtils.success(questionService.getQuestionVO(question, request));
+        return ResultUtils.success(questionService.getQuestionVO(question));
     }
 
     /**
-     * 根据 id 获取
+     * 根据 id 获取（本人或管理员）
      *
-     * @param id
-     * @return
+     * @param id 题目id
+     * @return 题目类
      */
-    @GetMapping("/get")
-    public BaseResponse<Question> getQuestionById(long id, HttpServletRequest request) {
-        if (id <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+    @GetMapping("/{id}")
+    public BaseResponse<Question> getQuestionById(@PathVariable Long id, HttpServletRequest request) {
+        if (ObjectUtil.isEmpty(id)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
         }
-        Question question = questionService.getById(id);
-        if (question == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
-        }
-        User loginUser = userService.getLoginUser(request);
-        //不是本人或管理员，不能直接获取数据
-        if (!loginUser.getId().equals(question.getUserId()) && !userService.isAdmin(loginUser)){
-            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
-        }
+
+        Question question = questionService.getQuestionById(id, request);
         return ResultUtils.success(question);
     }
 
     /**
      * 分页获取列表（仅管理员）
      *
-     * @param questionQueryRequest
-     * @return
+     * @param questionQueryRequest 题目查询请求
+     * @return 分页题目信息
      */
     @PostMapping("/list/page")
-    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    @AuthCheck(mustRole = ADMIN_ROLE)
     public BaseResponse<Page<Question>> listQuestionByPage(@RequestBody QuestionQueryRequest questionQueryRequest) {
+        if (ObjectUtil.isEmpty(questionQueryRequest)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
+        }
         long current = questionQueryRequest.getCurrent();
         long size = questionQueryRequest.getPageSize();
-        Page<Question> questionPage = questionService.page(new Page<>(current, size),
-                questionService.getQueryWrapper(questionQueryRequest));
+        Page<Question> questionPage =
+            questionService.page(new Page<>(current, size), questionService.getQueryWrapper(questionQueryRequest));
         return ResultUtils.success(questionPage);
     }
 
     /**
      * 分页获取列表（封装类）
      *
-     * @param questionQueryRequest
-     * @param request
-     * @return
+     * @param questionQueryRequest 题目查询请求
+     * @return 分页封装的题目信息
      */
     @PostMapping("/list/page/vo")
-    public BaseResponse<Page<QuestionVO>> listQuestionVOByPage(@RequestBody QuestionQueryRequest questionQueryRequest,
-                                                               HttpServletRequest request) {
+    public BaseResponse<Page<QuestionVO>> listQuestionVoByPage(@RequestBody QuestionQueryRequest questionQueryRequest) {
+        if (ObjectUtil.isEmpty(questionQueryRequest)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
+        }
         long current = questionQueryRequest.getCurrent();
         long size = questionQueryRequest.getPageSize();
-        // 限制爬虫
-        ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
-        Page<Question> questionPage = questionService.page(new Page<>(current, size),
-                questionService.getQueryWrapper(questionQueryRequest));
-        return ResultUtils.success(questionService.getQuestionVOPage(questionPage, request));
+
+        Page<QuestionVO> questionVoPage = questionService.getQuestionVoPage(current, size, questionQueryRequest);
+        return ResultUtils.success(questionVoPage);
     }
 
     /**
      * 分页获取当前用户创建的资源列表
      *
-     * @param questionQueryRequest
-     * @param request
-     * @return
+     * @param questionQueryRequest 题目查询请求
+     * @param request HttpServletRequest
+     * @return 分页封装的题目信息
      */
-    @PostMapping("/my/list/page/vo")
-    public BaseResponse<Page<QuestionVO>> listMyQuestionVOByPage(@RequestBody QuestionQueryRequest questionQueryRequest,
-                                                                 HttpServletRequest request) {
-        if (questionQueryRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+    @PostMapping("/list/page/vo/my")
+    public BaseResponse<Page<QuestionVO>> listMyQuestionVoByPage(@RequestBody QuestionQueryRequest questionQueryRequest,
+        HttpServletRequest request) {
+        if (ObjectUtil.isEmpty(questionQueryRequest)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
         }
-        User loginUser = userService.getLoginUser(request);
-        questionQueryRequest.setUserId(loginUser.getId());
-        long current = questionQueryRequest.getCurrent();
-        long size = questionQueryRequest.getPageSize();
-        // 限制爬虫
-        ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
-        Page<Question> questionPage = questionService.page(new Page<>(current, size),
-                questionService.getQueryWrapper(questionQueryRequest));
-        return ResultUtils.success(questionService.getQuestionVOPage(questionPage, request));
+        Page<QuestionVO> questionVoPage = questionService.listMyQuestionVoByPage(questionQueryRequest, request);
+        return ResultUtils.success(questionVoPage);
     }
 
     // endregion
-
-    /**
-     * 编辑（用户）
-     *
-     * @param questionEditRequest
-     * @param request
-     * @return
-     */
-    @PostMapping("/edit")
-    public BaseResponse<Boolean> editQuestion(@RequestBody QuestionEditRequest questionEditRequest, HttpServletRequest request) {
-        if (questionEditRequest == null || questionEditRequest.getId() <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        Question question = new Question();
-        BeanUtils.copyProperties(questionEditRequest, question);
-        List<JudgeCase> judgeCase = questionEditRequest.getJudgeCase();
-        if (judgeCase != null) {
-            question.setJudgeCase(JSONUtil.toJsonStr(judgeCase));
-        }
-        JudgeConfig judgeConfig = questionEditRequest.getJudgeConfig();
-        if (judgeConfig != null) {
-            question.setJudgeConfig(JSONUtil.toJsonStr(judgeConfig));
-        }
-        List<String> tags = questionEditRequest.getTags();
-        if (tags != null) {
-            question.setTags(JSONUtil.toJsonStr(tags));
-        }
-        // 参数校验
-        questionService.validQuestion(question, false);
-        User loginUser = userService.getLoginUser(request);
-        long id = questionEditRequest.getId();
-        // 判断是否存在
-        Question oldQuestion = questionService.getById(id);
-        ThrowUtils.throwIf(oldQuestion == null, ErrorCode.NOT_FOUND_ERROR);
-        // 仅本人或管理员可编辑
-        if (!oldQuestion.getUserId().equals(loginUser.getId()) && !userService.isAdmin(loginUser)) {
-            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
-        }
-        boolean result = questionService.updateById(question);
-        return ResultUtils.success(result);
-    }
 }

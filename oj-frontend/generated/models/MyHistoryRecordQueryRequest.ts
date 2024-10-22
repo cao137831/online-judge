@@ -2,13 +2,12 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type UserQueryRequest = {
+export type MyHistoryRecordQueryRequest = {
   current?: number;
-  id?: number;
+  judgeInfo?: string;
   pageSize?: number;
+  questionId?: number;
   sortField?: string;
   sortOrder?: string;
-  userName?: string;
-  userProfile?: string;
-  userRole?: string;
+  userId?: number;
 };

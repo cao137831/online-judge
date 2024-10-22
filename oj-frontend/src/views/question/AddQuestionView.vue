@@ -114,9 +114,9 @@ let form = ref({
   answer: "",
   content: "",
   judgeConfig: {
-    memoryLimit: 1000,
-    stackLimit: 1000,
-    timeLimit: 1000,
+    memoryLimit: 10000000,
+    stackLimit: 10000000,
+    timeLimit: 10000000,
   },
   judgeCase: [
     {
@@ -174,19 +174,16 @@ onMounted(() => {
 });
 
 const doSubmit = async () => {
-  ////console.log(form.value);
   // 区分更新还是创建
   if (updatePage) {
-    const res = await QuestionControllerService.updateQuestionUsingPost(
-      form.value
-    );
+    const res = await QuestionControllerService.updateUsingPut(form.value);
     if (res.code === 0) {
       message.success("更新成功");
     } else {
       message.error("更新失败，" + res.message);
     }
   } else {
-    const res = await QuestionControllerService.addQuestionUsingPost(
+    const res = await QuestionControllerService.addUsingPost2(
       form.value
     );
     if (res.code === 0) {

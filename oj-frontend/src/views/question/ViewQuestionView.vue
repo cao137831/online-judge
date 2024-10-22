@@ -10,13 +10,13 @@
                 :column="{ xs: 1, md: 2, lg: 3 }"
               >
                 <a-descriptions-item label="时间限制">
-                  {{ question.judgeConfig.timeLimit ?? 0 }}
+                  {{ question.judgeConfig.timeLimit ?? 0 }} ms
                 </a-descriptions-item>
                 <a-descriptions-item label="内存限制">
-                  {{ question.judgeConfig.memoryLimit ?? 0 }}
+                  {{ question.judgeConfig.memoryLimit ?? 0 }} KB
                 </a-descriptions-item>
                 <a-descriptions-item label="堆栈限制">
-                  {{ question.judgeConfig.stackLimit ?? 0 }}
+                  {{ question.judgeConfig.stackLimit ?? 0 }} KB
                 </a-descriptions-item>
               </a-descriptions>
               <MdViewer :value="question.content || ''" />
@@ -61,16 +61,105 @@
           :handle-change="changeCode"
         />
         <a-divider size="0" />
-        <a-button type="primary" style="min-width: 200px" @click="doSubmit">
+        <a-button type="dashed" style="min-width: 200px" @click="doTest">
+          运行测试
+        </a-button>
+        <a-button
+          type="primary"
+          style="min-width: 200px; float: right"
+          @click="doSubmit"
+        >
           提交代码
         </a-button>
+        <dir />
+        <a-space direction="vertical" size="large" :style="{ width: '600px' }">
+          <a-form :model="inputList">
+            <a-form-item
+              v-for="(input, index) of inputList"
+              :key="index"
+              no-style
+            >
+              <a-space direction="vertical" style="min-width: 640px">
+                <a-form-item
+                  :field="`inputList[${index}]`"
+                  :label="`输入用例-${index}`"
+                  :key="index"
+                >
+                  <a-textarea
+                    v-model="inputList[index]"
+                    placeholder="请输入测试输入用例"
+                  />
+
+                  <a-button
+                    status="danger"
+                    @click="handleDelete"
+                    style="float: right"
+                  >
+                    -
+                  </a-button>
+                </a-form-item>
+              </a-space>
+            </a-form-item>
+            <div style="margin-top: 32px">
+              <a-button @click="handleAdd" type="outline" status="success"
+                >+
+              </a-button>
+            </div>
+          </a-form>
+          <template v-if="testError.errorMessage.length === 0">
+            <a-form :model="outputList">
+              <a-form-item
+                v-for="(output, index) of outputList"
+                :key="index"
+                no-style
+              >
+                <a-space direction="vertical" style="min-width: 640px">
+                  <a-form-item
+                    :field="`outputList[${index}]`"
+                    :label="`输出-${index}`"
+                    :key="index"
+                  >
+                    <a-textarea
+                      style="white-space: pre-wrap"
+                      v-model="outputList[index]"
+                    ></a-textarea>
+                  </a-form-item>
+                </a-space>
+              </a-form-item>
+            </a-form>
+          </template>
+          <template v-else>
+            <a-form :model="testError">
+              <a-form-item no-style>
+                <a-space direction="vertical" style="min-width: 640px">
+                  <a-form-item :label="`错误`">
+                    <a-card :title="testError.judgeInfoStatus">
+                      <a-textarea
+                        style="white-space: pre-wrap; width: 500px"
+                        v-model="testError.errorMessage"
+                      ></a-textarea>
+                    </a-card>
+                  </a-form-item>
+                </a-space>
+              </a-form-item>
+            </a-form>
+          </template>
+        </a-space>
       </a-col>
     </a-row>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, withDefaults, defineProps, watch, toRaw } from "vue";
+import {
+  onMounted,
+  ref,
+  withDefaults,
+  defineProps,
+  watch,
+  toRaw,
+  computed,
+} from "vue";
 import message from "@arco-design/web-vue/es/message";
 import CodeEditor from "@/components/CodeEditor.vue";
 import MdViewer from "@/components/MdViewer.vue";
@@ -82,6 +171,9 @@ import {
 } from "../../../generated";
 import { useRoute } from "vue-router";
 import * as monaco from "monaco-editor";
+import { routes } from "@/router/routes";
+import checkAccess from "@/access/checkAccess";
+import { useFormItem } from "@arco-design/web-vue";
 
 interface Props {
   id: string;
@@ -120,6 +212,51 @@ const form = ref<QuestionSubmitAddRequest>({
     "    }\n" +
     "}",
 });
+
+let inputList = ref([""]);
+let outputList = ref([]);
+let testError = ref({
+  judgeInfoStatus: "", // 执行状态
+  errorMessage: "", // 错误信息
+});
+
+/**
+ * 新增判题用例
+ */
+const handleAdd = () => {
+  inputList.value.push("");
+};
+
+/**
+ * 删除判题用例
+ */
+const handleDelete = () => {
+  inputList.value.pop();
+};
+
+/**
+ * 运行测试
+ */
+const doTest = async () => {
+  if (!question.value?.id) {
+    return;
+  }
+
+  const res = await QuestionSubmitControllerService.doQuestionTestUsingPost({
+    inputList: inputList.value,
+    ...form.value,
+    questionId: question.value.id,
+  });
+
+  if (res.code === 0) {
+    outputList.value = res.data?.outputList ?? [];
+    testError.value.judgeInfoStatus = res.data?.judgeInfoStatus ?? "";
+    testError.value.errorMessage = res.data?.judgeInfo?.errorMessage ?? "";
+  }
+  console.log("input", inputList);
+  console.log("output", outputList);
+  console.log("testError", testError);
+};
 
 /**
  * 提交代码
@@ -189,7 +326,6 @@ watch(
     } else {
       form.value.code = "";
     }
-    // //console.log(form.value);
   }
 );
 /**

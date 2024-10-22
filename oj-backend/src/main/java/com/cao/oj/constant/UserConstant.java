@@ -2,6 +2,7 @@ package com.cao.oj.constant;
 
 /**
  * 用户常量
+ * @author cao13
  */
 public interface UserConstant {
 
@@ -27,5 +28,36 @@ public interface UserConstant {
      */
     String BAN_ROLE = "ban";
 
+    // endregion
+
+    // region 账号密码信息
+
+    /**
+     * 用户账号长度
+     */
+    Integer USER_ACCOUNT_LENGTH = 4;
+
+    /**
+     * 用户密码长度
+     */
+    Integer USER_PASSWORD_LENGTH = 8;
+
+    /**
+     * 默认密码
+     */
+    String DEFAULT_PASSWORD = "12345678";
+
+    /**
+     * 默认盐值
+     */
+    String SALT = "cao137831";
+
+    // endregion
+
+    // region 用户题目状态
+
+    Integer MY_QUESTION_ACCEPTED = 1;
+
+    Integer MY_QUESTION_NOT_ACCEPTED = 0;
     // endregion
 }

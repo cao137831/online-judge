@@ -2,28 +2,30 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { BaseResponse_ExecuteCodeResponse_ } from "../models/BaseResponse_ExecuteCodeResponse_";
 import type { BaseResponse_long_ } from "../models/BaseResponse_long_";
 import type { BaseResponse_Page_QuestionSubmitVO_ } from "../models/BaseResponse_Page_QuestionSubmitVO_";
 import type { QuestionSubmitAddRequest } from "../models/QuestionSubmitAddRequest";
 import type { QuestionSubmitQueryRequest } from "../models/QuestionSubmitQueryRequest";
+import type { QuestionTestRequest } from "../models/QuestionTestRequest";
 import type { CancelablePromise } from "../core/CancelablePromise";
 import { OpenAPI } from "../core/OpenAPI";
 import { request as __request } from "../core/request";
 
 export class QuestionSubmitControllerService {
   /**
-   * doQuestionSubmit
+   * doSubmit
    * @param questionSubmitAddRequest questionSubmitAddRequest
    * @returns BaseResponse_long_ OK
    * @returns any Created
    * @throws ApiError
    */
-  public static doQuestionSubmitUsingPost(
+  public static doSubmitUsingPost(
     questionSubmitAddRequest: QuestionSubmitAddRequest
   ): CancelablePromise<BaseResponse_long_ | any> {
     return __request(OpenAPI, {
       method: "POST",
-      url: "/api/question_submit/",
+      url: "/api/question_submit",
       body: questionSubmitAddRequest,
       errors: {
         401: `Unauthorized`,
@@ -34,19 +36,41 @@ export class QuestionSubmitControllerService {
   }
 
   /**
-   * listQuestionSubmitByPage
+   * listByPage
    * @param questionSubmitQueryRequest questionSubmitQueryRequest
    * @returns BaseResponse_Page_QuestionSubmitVO_ OK
    * @returns any Created
    * @throws ApiError
    */
-  public static listQuestionSubmitByPageUsingPost(
+  public static listByPageUsingPost2(
     questionSubmitQueryRequest: QuestionSubmitQueryRequest
   ): CancelablePromise<BaseResponse_Page_QuestionSubmitVO_ | any> {
     return __request(OpenAPI, {
       method: "POST",
       url: "/api/question_submit/list/page",
       body: questionSubmitQueryRequest,
+      errors: {
+        401: `Unauthorized`,
+        403: `Forbidden`,
+        404: `Not Found`,
+      },
+    });
+  }
+
+  /**
+   * doTest
+   * @param questionTestRequest questionTestRequest
+   * @returns BaseResponse_ExecuteCodeResponse_ OK
+   * @returns any Created
+   * @throws ApiError
+   */
+  public static doTestUsingPost(
+    questionTestRequest: QuestionTestRequest
+  ): CancelablePromise<BaseResponse_ExecuteCodeResponse_ | any> {
+    return __request(OpenAPI, {
+      method: "POST",
+      url: "/api/question_submit/test",
+      body: questionTestRequest,
       errors: {
         401: `Unauthorized`,
         403: `Forbidden`,

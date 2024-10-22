@@ -2,9 +2,11 @@ package com.cao.oj.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.cao.oj.judge.codesandbox.model.ExecuteCodeResponse;
 import com.cao.oj.model.dto.question.QuestionQueryRequest;
 import com.cao.oj.model.dto.questionsubmit.QuestionSubmitAddRequest;
 import com.cao.oj.model.dto.questionsubmit.QuestionSubmitQueryRequest;
+import com.cao.oj.model.dto.questionsubmit.QuestionTestRequest;
 import com.cao.oj.model.entity.Question;
 import com.cao.oj.model.entity.QuestionSubmit;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -25,10 +27,18 @@ public interface QuestionSubmitService extends IService<QuestionSubmit> {
      * 题目提交
      *
      * @param questionSubmitAddRequest
-     * @param loginUser
+     * @param request
      * @return
      */
-    long doQuestionSubmit(QuestionSubmitAddRequest questionSubmitAddRequest, User loginUser);
+    long doQuestionSubmit(QuestionSubmitAddRequest questionSubmitAddRequest, HttpServletRequest request);
+
+    /**
+     * 题目测试
+     *
+     * @param questionTestRequest
+     * @return
+     */
+    ExecuteCodeResponse doQuestionTest(QuestionTestRequest questionTestRequest);
 
     /**
      * 获取查询条件

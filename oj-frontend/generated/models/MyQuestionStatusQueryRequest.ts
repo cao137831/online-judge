@@ -2,13 +2,12 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type UserQueryRequest = {
+export type MyQuestionStatusQueryRequest = {
   current?: number;
-  id?: number;
   pageSize?: number;
+  questionId?: number;
   sortField?: string;
   sortOrder?: string;
-  userName?: string;
-  userProfile?: string;
-  userRole?: string;
+  status?: number;
+  userId?: number;
 };

@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+/**
+ * @author cao13
+ */
 @Data
 @Builder
 @NoArgsConstructor
@@ -19,14 +22,9 @@ public class ExecuteCodeResponse {
     private List<String> outputList;
 
     /**
-     * 接口请求的信息
+     * 接口请求的信息，待判题还是判题中，或者已完成
      */
-    private String message;
-
-    /**
-     * 执行状态
-     */
-    private Integer status;
+    private String questionSubmitStatus;
 
     /**
      * 判题信息

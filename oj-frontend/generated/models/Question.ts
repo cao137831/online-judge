@@ -7,14 +7,12 @@ export type Question = {
   answer?: string;
   content?: string;
   createTime?: string;
-  favourNum?: number;
   id?: number;
   isDelete?: number;
   judgeCase?: string;
   judgeConfig?: string;
   submitNum?: number;
   tags?: string;
-  thumbNum?: number;
   title?: string;
   updateTime?: string;
   userId?: number;

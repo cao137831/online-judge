@@ -3,6 +3,10 @@ package com.cao.oj.exception;
 import com.cao.oj.common.ErrorCode;
 import lombok.Getter;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.net.URLEncoder;
+
 /**
  * 自定义异常类
  */

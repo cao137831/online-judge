@@ -1,5 +1,6 @@
 package com.cao.oj.model.enums;
 
+import lombok.Getter;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.Arrays;
@@ -8,7 +9,9 @@ import java.util.stream.Collectors;
 
 /**
  * 题目提交状态
+ * @author cao13
  */
+@Getter
 public enum QuestionSubmitStatusEnum {
 
     WAITING("待判题", 0),
@@ -52,11 +55,4 @@ public enum QuestionSubmitStatusEnum {
         return null;
     }
 
-    public Integer getValue() {
-        return value;
-    }
-
-    public String getText() {
-        return text;
-    }
 }
